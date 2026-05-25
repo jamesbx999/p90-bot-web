@@ -1,8 +1,8 @@
 import { Redis } from '@upstash/redis';
 
 const redis = new Redis({
-  url: process.env.UPSTASH_REDIS_REST_URL="https://relieved-tick-135893.upstash.io"!,
-  token: process.env.UPSTASH_REDIS_REST_TOKEN="gQAAAAAAAhLVAAIgcDFhOGU0ZjRjZjAxMjI0NjM3YTA4NzAwYzA3ZDdjNWY5MA"!,
+  url: process.env.UPSTASH_REDIS_REST_URL="https://relieved-tick-135893.upstash.io",
+  token: process.env.UPSTASH_REDIS_REST_TOKEN="gQAAAAAAAhLVAAIgcDFhOGU0ZjRjZjAxMjI0NjM3YTA4NzAwYzA3ZDdjNWY5MA",
 });
 
 export interface KBEntry {
