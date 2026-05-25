@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { NextRequest, NextResponse } from 'next/server';
 import { getKBEntries, getScheduleItems, buildScheduleText } from '@/lib/storage';
 import { buildSystemPrompt } from '@/lib/knowledge';
@@ -9,7 +11,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Invalid messages' }, { status: 400 });
     }
 
-    // Build context from DB
+    const apiKey = process.env.ANTHROPIC_API_KEY;
+    if (!apiKey) {
+      return NextResponse.json({ error: 'API key not configured', detail: 'ANTHROPIC_API_KEY is not set in Vercel environment variables' }, { status: 500 });
+    }
+
     const [kbEntries, scheduleItems] = await Promise.all([
       getKBEntries(),
       getScheduleItems(),
@@ -21,27 +27,27 @@ export async function POST(req: NextRequest) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': process.env.ANTHROPIC_API_KEY!,
+        'x-api-key': apiKey,
         'anthropic-version': '2023-06-01',
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-haiku-4-5-20251001',
         max_tokens: 1000,
         system: systemPrompt,
-        messages: messages.slice(-20), // keep last 20 messages to manage tokens
+        messages: messages.slice(-20),
       }),
     });
 
+    const data = await response.json();
+
     if (!response.ok) {
-      const err = await response.text();
-      console.error('Anthropic error:', err);
-      return NextResponse.json({ error: 'AI service error' }, { status: 500 });
+      console.error('Anthropic error:', data);
+      return NextResponse.json({ error: 'AI error', detail: data?.error?.message || JSON.stringify(data) }, { status: 500 });
     }
 
-    const data = await response.json();
     return NextResponse.json(data);
   } catch (error) {
     console.error('Chat API error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json({ error: 'Internal server error', detail: String(error) }, { status: 500 });
   }
 }
