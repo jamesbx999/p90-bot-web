@@ -1,9 +1,13 @@
 import { Redis } from '@upstash/redis';
 
-const redis = new Redis({
-  url: process.env.UPSTASH_REDIS_REST_URL!,
-  token: process.env.UPSTASH_REDIS_REST_TOKEN!,
-});
+function getRedis(): Redis {
+  const url = process.env.UPSTASH_REDIS_REST_URL;
+  const token = process.env.UPSTASH_REDIS_REST_TOKEN;
+  if (!url || !token) {
+    throw new Error('Missing Upstash environment variables');
+  }
+  return new Redis({ url, token });
+}
 
 export interface KBEntry {
   id: string;
@@ -28,9 +32,9 @@ export interface ScheduleItem {
   ts: number;
 }
 
-// ── Knowledge Base ────────────────────────────────────────────────────────────
 export async function getKBEntries(): Promise<KBEntry[]> {
   try {
+    const redis = getRedis();
     const data = await redis.get<KBEntry[]>('kb:entries');
     return data || [];
   } catch (e) {
@@ -40,6 +44,7 @@ export async function getKBEntries(): Promise<KBEntry[]> {
 }
 
 export async function addKBEntry(entry: Omit<KBEntry, 'id' | 'ts'>): Promise<KBEntry> {
+  const redis = getRedis();
   const entries = await getKBEntries();
   const newEntry: KBEntry = { ...entry, id: Date.now().toString(), ts: Date.now() };
   await redis.set('kb:entries', JSON.stringify([newEntry, ...entries]));
@@ -47,13 +52,14 @@ export async function addKBEntry(entry: Omit<KBEntry, 'id' | 'ts'>): Promise<KBE
 }
 
 export async function deleteKBEntry(id: string): Promise<void> {
+  const redis = getRedis();
   const entries = await getKBEntries();
   await redis.set('kb:entries', JSON.stringify(entries.filter(e => e.id !== id)));
 }
 
-// ── Schedule ──────────────────────────────────────────────────────────────────
 export async function getScheduleItems(): Promise<ScheduleItem[]> {
   try {
+    const redis = getRedis();
     const data = await redis.get<ScheduleItem[]>('schedule:items');
     return data || [];
   } catch (e) {
@@ -63,6 +69,7 @@ export async function getScheduleItems(): Promise<ScheduleItem[]> {
 }
 
 export async function addScheduleItem(item: Omit<ScheduleItem, 'id' | 'ts'>): Promise<ScheduleItem> {
+  const redis = getRedis();
   const items = await getScheduleItems();
   const newItem: ScheduleItem = { ...item, id: Date.now().toString(), ts: Date.now() };
   await redis.set('schedule:items', JSON.stringify([newItem, ...items]));
@@ -70,6 +77,7 @@ export async function addScheduleItem(item: Omit<ScheduleItem, 'id' | 'ts'>): Pr
 }
 
 export async function deleteScheduleItem(id: string): Promise<void> {
+  const redis = getRedis();
   const items = await getScheduleItems();
   await redis.set('schedule:items', JSON.stringify(items.filter(i => i.id !== id)));
 }
