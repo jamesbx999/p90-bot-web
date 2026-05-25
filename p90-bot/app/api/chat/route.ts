@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { NextRequest, NextResponse } from 'next/server';
 import { getKBEntries, getScheduleItems, buildScheduleText } from '@/lib/storage';
 import { buildSystemPrompt } from '@/lib/knowledge';
@@ -9,7 +11,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Invalid messages' }, { status: 400 });
     }
 
-    // Build context from DB
+    const apiKey = process.env.ANTHROPIC_API_KEY;
+    if (!apiKey) {
+      return NextResponse.json({ error: 'API key not configured' }, { status: 500 });
+    }
+
     const [kbEntries, scheduleItems] = await Promise.all([
       getKBEntries(),
       getScheduleItems(),
@@ -21,14 +27,14 @@ export async function POST(req: NextRequest) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': process.env.ANTHROPIC_API_KEY!,
+        'x-api-key': apiKey,
         'anthropic-version': '2023-06-01',
       },
       body: JSON.stringify({
         model: 'claude-sonnet-4-20250514',
         max_tokens: 1000,
         system: systemPrompt,
-        messages: messages.slice(-20), // keep last 20 messages to manage tokens
+        messages: messages.slice(-20),
       }),
     });
 
