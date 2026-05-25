@@ -1,4 +1,4 @@
-export const dynamic = 'force-dynamic';
+xport const dynamic = 'force-dynamic';
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getScheduleItems, addScheduleItem, deleteScheduleItem } from '@/lib/storage';
