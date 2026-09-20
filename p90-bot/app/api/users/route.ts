@@ -16,7 +16,8 @@ async function getUsers(): Promise<UserData[]> {
   if (!url || !token) return [];
   try {
     const res = await fetch(`${url}/get/p90:users`, {
-      headers: { Authorization: `Bearer ${token}` }, cache: 'no-store',
+      headers: { Authorization: `Bearer ${token}` },
+      cache: 'no-store',
     });
     const { result } = await res.json();
     return result ? JSON.parse(result) : [];
@@ -29,7 +30,10 @@ async function saveUsers(users: UserData[]): Promise<void> {
   if (!url || !token) return;
   await fetch(url, {
     method: 'POST',
-    headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
     body: JSON.stringify(['SET', 'p90:users', JSON.stringify(users)]),
   });
 }
