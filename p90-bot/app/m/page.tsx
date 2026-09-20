@@ -125,7 +125,7 @@ function MemberContent() {
             )}
             <p style={{ color: 'rgba(255,255,255,0.85)', fontSize: 15, lineHeight: 1.7, margin: '0 0 24px' }}>{sub}</p>
             {member && (
-              <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20, background: 'rgba(0,0,0,0.2)', borderRadius: 12, padding: '10px 16px', display: 'inline-flex' }}>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 12, marginBottom: 20, background: 'rgba(0,0,0,0.2)', borderRadius: 12, padding: '10px 16px' }}>
                 {member.profileImg ? (
                   <img src={member.profileImg} alt="" style={{ width: 44, height: 44, borderRadius: '50%', objectFit: 'cover', border: '2px solid rgba(255,255,255,0.5)' }} />
                 ) : (
