@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from 'react';
 
 interface UserData {
   id: string; username: string; phone: string; refCode: string;
-  referredBy?: string; lineUrl?: string; messengerUrl?: string;
+  referredBy?: string; lineUrl?: string; messengerUrl?: string; facebookUrl?: string;
   profileImg?: string; refBaseUrl?: string; heroTitle?: string;
   createdByAdmin?: boolean; ts: number;
 }
@@ -164,7 +164,7 @@ export default function AdminPage() {
       phone: u.phone || '',
       lineUrl: u.lineUrl || '',
       messengerUrl: u.messengerUrl || '',
-      facebookUrl: (u as UserData & { facebookUrl?: string }).facebookUrl || '',
+      facebookUrl: u.facebookUrl || '',
       profileImg: u.profileImg || '',
       refBaseUrl: u.refBaseUrl || '',
       heroTitle: u.heroTitle || '',
