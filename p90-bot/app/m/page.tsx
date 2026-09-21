@@ -2,7 +2,7 @@
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 
-interface UserData { id: string; username: string; phone: string; refCode: string; referredBy?: string; lineUrl?: string; messengerUrl?: string; profileImg?: string; refBaseUrl?: string; heroTitle?: string; ts: number; }
+interface UserData { id: string; username: string; phone: string; refCode: string; referredBy?: string; lineUrl?: string; messengerUrl?: string; facebookUrl?: string; profileImg?: string; refBaseUrl?: string; heroTitle?: string; ts: number; }
 interface SiteSettings { brandName: string; tagline: string; subTagline: string; welcomeMsg: string; phone: string; lineUrl: string; messengerUrl: string; facebookUrl: string; incomePlan: string; poster1: string; poster2: string; poster3: string; }
 
 const GR = '#14a085'; const GR2 = '#0d7377'; const GLIGHT = '#f0fdf4'; const GBORDER = '#bbf7d0';
@@ -329,6 +329,7 @@ function MemberContent() {
                 {member.phone && <span>📞 {member.phone}</span>}
                 {member.lineUrl && <a href={member.lineUrl} target="_blank" rel="noreferrer" style={{color:GR,fontWeight:600}}>💬 LINE</a>}
                 {member.messengerUrl && <a href={member.messengerUrl} target="_blank" rel="noreferrer" style={{color:GR,fontWeight:600}}>💬 Messenger</a>}
+                {member.facebookUrl && <a href={member.facebookUrl} target="_blank" rel="noreferrer" style={{color:GR,fontWeight:600}}>📘 Facebook</a>}
               </div>
             </div>
           )}
@@ -346,7 +347,10 @@ function MemberContent() {
           <div style={{ textAlign:'center',marginTop:12,display:'flex',gap:12,justifyContent:'center',flexWrap:'wrap' }}>
             <a href="/" style={{color:GR,fontSize:13}}>🤖 ไปที่บอท</a>
             {settings?.lineUrl && <a href={settings.lineUrl} target="_blank" rel="noreferrer" style={{color:GR,fontSize:13}}>💬 LINE</a>}
-            {settings?.facebookUrl && <a href={settings.facebookUrl} target="_blank" rel="noreferrer" style={{color:GR,fontSize:13}}>📘 Facebook</a>}
+            {member?.facebookUrl
+              ? <a href={member.facebookUrl} target="_blank" rel="noreferrer" style={{color:GR,fontSize:13}}>📘 Facebook</a>
+              : settings?.facebookUrl && <a href={settings.facebookUrl} target="_blank" rel="noreferrer" style={{color:GR,fontSize:13}}>📘 Facebook</a>
+            }
           </div>
         </div>
       </div>
