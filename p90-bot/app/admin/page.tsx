@@ -24,6 +24,7 @@ const DEFAULT_SETTINGS: SiteSettings = {
 };
 
 const BLANK_MEMBER = { username:'', slug:'', phone:'', lineUrl:'', messengerUrl:'', profileImg:'', refBaseUrl:'', heroTitle:'' };
+type MemberForm = typeof BLANK_MEMBER;
 const DAYS = ['อาทิตย์','จันทร์','อังคาร','พุธ','พฤหัสบดี','ศุกร์','เสาร์'];
 const WEEKS = ['สัปดาห์ที่ 1','สัปดาห์ที่ 2','สัปดาห์ที่ 3','สัปดาห์ที่ 4'];
 const GR = '#14a085'; const GR2 = '#0d7377'; const GLIGHT = '#f0fdf4';
@@ -75,8 +76,11 @@ export default function AdminPage() {
   const [saving, setSaving] = useState(false);
   const [settingsSaved, setSettingsSaved] = useState(false);
   const [showAddMember, setShowAddMember] = useState(false);
-  const [memberForm, setMemberForm] = useState(BLANK_MEMBER);
+  const [memberForm, setMemberForm] = useState<MemberForm>(BLANK_MEMBER);
   const [memberSaving, setMemberSaving] = useState(false);
+  const [editingUser, setEditingUser] = useState<UserData | null>(null);
+  const [editForm, setEditForm] = useState<MemberForm>(BLANK_MEMBER);
+  const [editSaving, setEditSaving] = useState(false);
   const [uploadingProfile, setUploadingProfile] = useState(false);
   const [kbTitle, setKbTitle] = useState(''); const [kbContent, setKbContent] = useState('');
   const [showAddKB, setShowAddKB] = useState(false); const [showAddSch, setShowAddSch] = useState(false);
@@ -149,6 +153,49 @@ export default function AdminPage() {
     if (!confirm('ลบสมาชิก "'+name+'"?')) return;
     await api('/api/users?id='+id,'DELETE');
     setUsers(p=>p.filter(u=>u.id!==id)); notify('ลบสมาชิกแล้ว');
+  };
+
+  const openEdit = (u: UserData) => {
+    setEditingUser(u);
+    setEditForm({
+      username: u.username,
+      slug: u.refCode,
+      phone: u.phone || '',
+      lineUrl: u.lineUrl || '',
+      messengerUrl: u.messengerUrl || '',
+      profileImg: u.profileImg || '',
+      refBaseUrl: u.refBaseUrl || '',
+      heroTitle: u.heroTitle || '',
+    });
+  };
+
+  const saveEdit = async () => {
+    if (!editingUser || !editForm.username.trim()) return;
+    setEditSaving(true);
+    const updated = await api('/api/users', 'PUT', {
+      id: editingUser.id,
+      username: editForm.username.trim(),
+      phone: editForm.phone,
+      lineUrl: editForm.lineUrl,
+      messengerUrl: editForm.messengerUrl,
+      profileImg: editForm.profileImg,
+      refBaseUrl: editForm.refBaseUrl,
+      heroTitle: editForm.heroTitle,
+    });
+    if (!updated?.error) {
+      setUsers(p => p.map(u => u.id === editingUser.id ? { ...u, ...updated } : u));
+      setEditingUser(null);
+      notify('✅ แก้ไขข้อมูลแล้ว!');
+    } else { notify('❌ ' + updated.error); }
+    setEditSaving(false);
+  };
+
+  const handleEditProfileUpload = async (file: File) => {
+    setUploadingProfile(true);
+    const url = await uploadImg(file);
+    if (url) { setEditForm(p => ({ ...p, profileImg: url })); notify('อัปโหลดรูปแล้ว!'); }
+    else notify('อัปโหลดไม่สำเร็จ');
+    setUploadingProfile(false);
   };
 
   const copyRef = (code: string) => {
@@ -301,7 +348,10 @@ export default function AdminPage() {
                         </button>
                       </td>
                       <td style={{ padding:'12px 16px' }}>
-                        <button onClick={()=>delUser(u.id,u.username)} style={{ padding:'5px 14px',borderRadius:20,border:'1.5px solid #fecaca',background:'#fef2f2',color:'#ef4444',fontSize:12,cursor:'pointer',fontFamily:'inherit',fontWeight:600 }}>ลบ</button>
+                        <div style={{ display:'flex',gap:6 }}>
+                          <button onClick={()=>openEdit(u)} style={{ padding:'5px 12px',borderRadius:20,border:'1.5px solid #bfdbfe',background:'#eff6ff',color:'#2563eb',fontSize:12,cursor:'pointer',fontFamily:'inherit',fontWeight:600 }}>✏️ แก้ไข</button>
+                          <button onClick={()=>delUser(u.id,u.username)} style={{ padding:'5px 12px',borderRadius:20,border:'1.5px solid #fecaca',background:'#fef2f2',color:'#ef4444',fontSize:12,cursor:'pointer',fontFamily:'inherit',fontWeight:600 }}>ลบ</button>
+                        </div>
                       </td>
                     </tr>
                   ))}
@@ -519,6 +569,98 @@ export default function AdminPage() {
                 <button onClick={()=>setShowAddMember(false)} style={{ padding:'12px 24px',borderRadius:20,border:'1.5px solid #e5e7eb',background:'#fff',color:'#6b7280',fontFamily:'inherit',fontSize:14,cursor:'pointer' }}>ยกเลิก</button>
                 <button onClick={addMember} disabled={!memberForm.username.trim()||memberSaving} style={{ padding:'12px 32px',borderRadius:20,border:'none',background:memberForm.username.trim()?'linear-gradient(135deg,#0d7377,#14a085)':'#d1d5db',color:'#fff',fontFamily:'inherit',fontSize:15,fontWeight:700,cursor:memberForm.username.trim()?'pointer':'not-allowed',boxShadow:memberForm.username.trim()?'0 2px 10px #14a08555':'none' }}>
                   {memberSaving?'⏳ กำลังบันทึก...':'💾 บันทึก'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ══ EDIT MEMBER MODAL ══ */}
+      {editingUser && (
+        <div style={{ position:'fixed',inset:0,zIndex:1000,background:'rgba(0,0,0,0.5)',backdropFilter:'blur(4px)',display:'flex',alignItems:'center',justifyContent:'center',padding:20 }} onClick={e=>e.target===e.currentTarget&&setEditingUser(null)}>
+          <div style={{ background:'#fff',borderRadius:20,padding:0,width:'min(95vw,600px)',maxHeight:'92vh',overflowY:'auto',boxShadow:'0 32px 80px rgba(0,0,0,0.3)' }}>
+            <div style={{ padding:'20px 24px',borderBottom:'1px solid #f3f4f6',display:'flex',alignItems:'center',justifyContent:'space-between',position:'sticky',top:0,background:'#fff',zIndex:1 }}>
+              <div>
+                <div style={{ fontWeight:700,fontSize:18,color:'#1f2937' }}>✏️ แก้ไขข้อมูลสมาชิก</div>
+                <div style={{ fontSize:12,color:'#6b7280',marginTop:2 }}>{editingUser.username} · รหัส {editingUser.refCode}</div>
+              </div>
+              <button onClick={()=>setEditingUser(null)} style={{ width:32,height:32,borderRadius:'50%',border:'1.5px solid #e5e7eb',background:'#fff',color:'#6b7280',fontSize:18,cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center' }}>×</button>
+            </div>
+            <div style={{ padding:'22px 24px' }}>
+
+              {/* Name + Slug (read-only slug) */}
+              <div style={{ display:'grid',gridTemplateColumns:'1fr 1fr',gap:14,marginBottom:16 }}>
+                <div>
+                  <div style={{ fontSize:13,fontWeight:600,color:GR,marginBottom:6 }}>ชื่อที่แสดง *</div>
+                  <input style={ins} value={editForm.username} onChange={e=>setEditForm(p=>({...p,username:e.target.value}))} placeholder="ชื่อสมาชิก" />
+                </div>
+                <div>
+                  <div style={{ fontSize:13,fontWeight:600,color:GR,marginBottom:6 }}>รหัส Ref (ไม่สามารถเปลี่ยนได้)</div>
+                  <input style={{...ins,background:'#f9fafb',color:'#9ca3af'}} value={editingUser.refCode} readOnly />
+                  <div style={{ fontSize:11,color:'#9ca3af',marginTop:4 }}>ลิงก์: /m?ref={editingUser.refCode}</div>
+                </div>
+              </div>
+
+              {/* Ref Base URL */}
+              <div style={{ marginBottom:16 }}>
+                <div style={{ fontSize:13,fontWeight:600,color:GR,marginBottom:6 }}>ลิงก์สมัครส่วนตัว OlyLife (ref link)</div>
+                <input style={ins} value={editForm.refBaseUrl} onChange={e=>setEditForm(p=>({...p,refBaseUrl:e.target.value}))} placeholder="https://olylifeint.com/register?ref=..." />
+              </div>
+
+              {/* Phone + LINE */}
+              <div style={{ display:'grid',gridTemplateColumns:'1fr 1fr',gap:14,marginBottom:16 }}>
+                <div>
+                  <div style={{ fontSize:13,fontWeight:600,color:GR,marginBottom:6 }}>เบอร์โทร</div>
+                  <input style={ins} value={editForm.phone} onChange={e=>setEditForm(p=>({...p,phone:e.target.value}))} placeholder="0812345678" />
+                </div>
+                <div>
+                  <div style={{ fontSize:13,fontWeight:600,color:GR,marginBottom:6 }}>ลิงก์ไลน์ (LINE)</div>
+                  <input style={ins} value={editForm.lineUrl} onChange={e=>setEditForm(p=>({...p,lineUrl:e.target.value}))} placeholder="https://line.me/ti/p/~id" />
+                </div>
+              </div>
+
+              {/* Messenger */}
+              <div style={{ marginBottom:16 }}>
+                <div style={{ fontSize:13,fontWeight:600,color:GR,marginBottom:6 }}>ลิงก์ Messenger</div>
+                <input style={ins} value={editForm.messengerUrl} onChange={e=>setEditForm(p=>({...p,messengerUrl:e.target.value}))} placeholder="https://m.me/username" />
+              </div>
+
+              {/* Profile Photo */}
+              <div style={{ marginBottom:16 }}>
+                <div style={{ fontSize:13,fontWeight:600,color:GR,marginBottom:8 }}>รูปโปรไฟล์</div>
+                <div style={{ display:'flex',gap:14,alignItems:'center' }}>
+                  <div style={{ width:72,height:72,borderRadius:'50%',border:'2px dashed #d1d5db',background:'#f9fafb',display:'flex',alignItems:'center',justifyContent:'center',overflow:'hidden',flexShrink:0,position:'relative' }}>
+                    {editForm.profileImg
+                      ? <img src={editForm.profileImg} alt="" style={{ width:'100%',height:'100%',objectFit:'cover' }} onError={e=>(e.currentTarget.style.display='none')} />
+                      : <span style={{ fontSize:28,opacity:.3 }}>👤</span>}
+                    {uploadingProfile && <div style={{ position:'absolute',inset:0,background:'rgba(0,0,0,0.5)',display:'flex',alignItems:'center',justifyContent:'center' }}>⏳</div>}
+                  </div>
+                  <div style={{ flex:1 }}>
+                    <input type="file" accept="image/*" ref={profileFileRef} style={{ display:'none' }} onChange={e=>{const f=e.target.files?.[0];if(f)handleEditProfileUpload(f);e.target.value='';}} />
+                    <button onClick={()=>profileFileRef.current?.click()} disabled={uploadingProfile} style={{ padding:'8px 16px',borderRadius:20,border:'1.5px solid #bbf7d0',background:GLIGHT,color:'#16a34a',fontSize:13,cursor:'pointer',fontFamily:'inherit',fontWeight:600,marginBottom:8,display:'block' }}>
+                      📤 {uploadingProfile?'กำลังอัปโหลด...':'อัปโหลดรูปใหม่'}
+                    </button>
+                    <input style={{...ins,fontSize:12}} value={editForm.profileImg} onChange={e=>setEditForm(p=>({...p,profileImg:e.target.value}))} placeholder="หรือวาง URL รูป เช่น https://i.imgur.com/xxx.jpg" />
+                    {editForm.profileImg && (
+                      <button onClick={()=>setEditForm(p=>({...p,profileImg:''}))} style={{ marginTop:6,padding:'4px 10px',borderRadius:8,border:'1.5px solid #fecaca',background:'#fef2f2',color:'#ef4444',fontSize:11,cursor:'pointer',fontFamily:'inherit' }}>🗑 ลบรูป</button>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Hero Title */}
+              <div style={{ marginBottom:22 }}>
+                <div style={{ fontSize:13,fontWeight:600,color:GR,marginBottom:6 }}>หัวข้อ hero (เว้นว่าง = ค่าเริ่มต้น)</div>
+                <input style={ins} value={editForm.heroTitle} onChange={e=>setEditForm(p=>({...p,heroTitle:e.target.value}))} placeholder="เช่น สุขภาพดี *เริ่มที่นี่*" />
+                <div style={{ fontSize:11,color:'#9ca3af',marginTop:4 }}>ครอบคำด้วย *...* ให้เป็นสีไฮไลต์</div>
+              </div>
+
+              {/* Actions */}
+              <div style={{ display:'flex',gap:12,justifyContent:'flex-end' }}>
+                <button onClick={()=>setEditingUser(null)} style={{ padding:'12px 22px',borderRadius:20,border:'1.5px solid #e5e7eb',background:'#fff',color:'#6b7280',fontFamily:'inherit',fontSize:14,cursor:'pointer' }}>ยกเลิก</button>
+                <button onClick={saveEdit} disabled={!editForm.username.trim()||editSaving} style={{ padding:'12px 28px',borderRadius:20,border:'none',background:editForm.username.trim()?'linear-gradient(135deg,#0d7377,#14a085)':'#d1d5db',color:'#fff',fontFamily:'inherit',fontSize:15,fontWeight:700,cursor:editForm.username.trim()?'pointer':'not-allowed',boxShadow:editForm.username.trim()?'0 2px 10px #14a08555':'none' }}>
+                  {editSaving?'⏳ กำลังบันทึก...':'💾 บันทึกการแก้ไข'}
                 </button>
               </div>
             </div>
