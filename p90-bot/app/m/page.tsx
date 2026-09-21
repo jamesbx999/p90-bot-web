@@ -358,14 +358,17 @@ function MemberContent() {
 
       {/* ZOOM */}
       <div className="m-zoom">
-        <div style={{ fontWeight:700,fontSize:17,color:'#92400e',marginBottom:14 }}>📅 ประชุมออนไลน์ทุกวัน</div>
-        <div style={{ color:'#78350f',fontSize:13,marginBottom:14 }}>รายการ "คนรักสุขภาพ" ทุกวันจันทร์–ศุกร์</div>
-        <div className="m-zoom-grid" style={{ maxWidth:600,margin:'0 auto' }}>
-          {[['⏰','07:00–08:30 น.'],['💻','Zoom ID: 568 239 4879'],['🔑','Passcode: 6666']].map(([icon,text],i) => (
+        <div style={{ fontWeight:700,fontSize:18,color:'#92400e',marginBottom:8 }}>📅 ประชุมออนไลน์ทุกวัน</div>
+        <div style={{ color:'#78350f',fontSize:13,marginBottom:16 }}>รายการ "คนรักสุขภาพ" ทุกวันจันทร์–ศุกร์</div>
+        <div className="m-zoom-grid" style={{ maxWidth:600,margin:'0 auto 14px' }}>
+          {[['⏰','07:00–08:30 น.'],['💻','Zoom ID: 841 1530 1612'],['🔑','Passcode: 6666']].map(([icon,text],i) => (
             <div key={i} style={{ background:'#fff',borderRadius:10,padding:'12px 14px',border:'1.5px solid #fde68a',fontSize:13,color:'#92400e',fontWeight:500 }}>{icon} {text}</div>
           ))}
         </div>
-        <a href="https://us06web.zoom.us/j/5682394879?pwd=cApWGQrBAsiUbOnb1VnFIe7jGFu9kx.1" target="_blank" rel="noreferrer" style={{ display:'inline-block',marginTop:16,padding:'11px 28px',borderRadius:25,background:'#d97706',color:'#fff',textDecoration:'none',fontWeight:700,fontSize:14 }}>เข้าร่วม Zoom →</a>
+        <div style={{ color:'#78350f',fontSize:13,marginBottom:16,fontStyle:'italic' }}>
+          อย่าลืมเข้าร่วมตามเวลานัดหมายนะครับ แล้วพบกันในห้องประชุม 😊
+        </div>
+        <a href="https://us06web.zoom.us/j/84115301612?pwd=GdQYhQHPV4Ztjcqsv16VdTP6yhq9di.1" target="_blank" rel="noreferrer" style={{ display:'inline-block',padding:'12px 32px',borderRadius:25,background:'#d97706',color:'#fff',textDecoration:'none',fontWeight:700,fontSize:15,boxShadow:'0 4px 15px rgba(217,119,6,0.35)' }}>เข้าร่วม Zoom →</a>
       </div>
 
       {/* REGISTER */}
