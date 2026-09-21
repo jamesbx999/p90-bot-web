@@ -32,7 +32,7 @@ const GLIGHT = '#f0fdf4';
 const DEFAULT_SETTINGS: SiteSettings = {
   brandName:'OlyLife THZ Tera-P90+', tagline:'ถามทุกเรื่องสินค้า ให้ AI ตอบแทนคุณ',
   subTagline:'ผู้ช่วย AI 24 ชั่วโมง เทคโนโลยี PEMF & Terahertz', welcomeMsg:'สวัสดีค่ะ! ฉันชื่อ โอลี่ 🌿',
-  phone:'', lineUrl:'', messengerUrl:'', facebookUrl:'https://www.facebook.com/OlyLifeGlobalByVibeVerse/',
+  phone:'', lineUrl:'', messengerUrl:'', facebookUrl:'https://www.facebook.com/',
   incomePlan:'', poster1:'', poster2:'', poster3:'',
 };
 
