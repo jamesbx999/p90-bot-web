@@ -24,7 +24,10 @@ const CSS = `
   .m-hero-btns { display:flex; gap:12px; flex-wrap:wrap; }
   .m-hero-btn1 { padding:12px 24px; border-radius:25px; background:#fff; color:#0d7377; font-size:14px; text-decoration:none; font-weight:700; box-shadow:0 4px 15px rgba(0,0,0,0.15); }
   .m-hero-btn2 { padding:12px 24px; border-radius:25px; border:2px solid rgba(255,255,255,0.6); color:#fff; font-size:14px; text-decoration:none; font-weight:600; }
-  .m-chat-box { background:#fff; border-radius:20px; padding:18px; box-shadow:0 20px 60px rgba(0,0,0,0.2); }
+  .m-chat-box { background:#fff; border-radius:20px; overflow:hidden; box-shadow:0 24px 64px rgba(0,0,0,0.3), 0 0 0 3px rgba(255,255,255,0.4), 0 0 40px rgba(109,219,180,0.25); animation:floatCard 3s ease-in-out infinite; }
+  .m-chat-label { background:rgba(255,255,255,0.18); backdrop-filter:blur(8px); border:1px solid rgba(255,255,255,0.3); border-radius:30px; padding:6px 16px; font-size:12px; color:#fff; font-weight:600; display:inline-flex; align-items:center; gap:6px; margin-bottom:12px; }
+  @keyframes floatCard { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.6;transform:scale(1.4)} }
   .m-member-badge { display:inline-flex; align-items:center; gap:10px; background:rgba(0,0,0,0.2); border-radius:12px; padding:10px 16px; margin-bottom:18px; }
 
   .m-steps { background:#f9fafb; padding:52px 20px; text-align:center; }
@@ -58,6 +61,8 @@ const CSS = `
     .m-hero-grid { grid-template-columns:1fr; gap:24px; }
     .m-hero h1 { font-size:26px; }
     .m-nav-links .m-nav-link { display:none; }
+    .m-chat-box { animation:none; } /* disable float on mobile for performance */
+    .m-chat-label { font-size:13px; padding:7px 18px; }
 
     .m-steps { padding:36px 16px; }
     .m-steps-grid { grid-template-columns:1fr; gap:12px; }
@@ -213,24 +218,73 @@ function MemberContent() {
           </div>
 
           {/* CHAT BOX */}
-          <div className="m-chat-box">
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12, paddingBottom: 12, borderBottom: '1px solid #f3f4f6' }}>
-              <div style={{ width: 34, height: 34, borderRadius: '50%', background: 'linear-gradient(135deg,#0d7377,#14a085)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 17 }}>🤖</div>
-              <div><div style={{ fontWeight: 700, fontSize: 14, color: '#1f2937' }}>โอลี่ AI</div><div style={{ fontSize: 11, color: '#16a34a' }}>● ออนไลน์</div></div>
+          <div>
+            <div className="m-chat-label">
+              <span style={{ width:8,height:8,borderRadius:'50%',background:'#4ade80',display:'inline-block',animation:'pulse 1.5s infinite' }}></span>
+              🤖 ลองถาม AI Bot ได้เลย!
             </div>
-            {chatReply && <div style={{ background: GLIGHT, borderRadius: 10, padding: '9px 12px', marginBottom: 10, fontSize: 13, color: '#1f2937', lineHeight: 1.6 }}>{chatReply}</div>}
-            {chatLoading && <div style={{ background: '#f9fafb', borderRadius: 10, padding: '9px 12px', marginBottom: 10, display: 'flex', gap: 4 }}>{[0,1,2].map(j=><div key={j} style={{ width:5,height:5,borderRadius:'50%',background:'#6b7280',animation:'bop 1.2s infinite',animationDelay:j*0.2+'s' }}/>)}</div>}
-            <div style={{ display: 'flex', gap: 8 }}>
-              <input value={chatMsg} onChange={e => setChatMsg(e.target.value)} onKeyDown={e => e.key === 'Enter' && sendChat()} placeholder="สินค้าตัวไหนขายดี?" style={{ flex: 1, padding: '9px 12px', borderRadius: 20, border: '1.5px solid #e5e7eb', fontSize: 13, fontFamily: 'inherit', outline: 'none' }} />
-              <button onClick={sendChat} style={{ width: 36, height: 36, borderRadius: '50%', border: 'none', background: 'linear-gradient(135deg,#0d7377,#14a085)', color: '#fff', fontSize: 17, cursor: 'pointer', flexShrink: 0 }}>➤</button>
+            <div className="m-chat-box">
+            {/* Chat Header */}
+            <div style={{ background:'linear-gradient(135deg,#0d7377,#14a085)', padding:'16px 18px', display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+              <div style={{ display:'flex', alignItems:'center', gap:12 }}>
+                <div style={{ width:48, height:48, borderRadius:'50%', background:'rgba(255,255,255,0.2)', border:'2px solid rgba(255,255,255,0.5)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:24 }}>🤖</div>
+                <div>
+                  <div style={{ fontWeight:800, fontSize:16, color:'#fff' }}>โอลี่ AI</div>
+                  <div style={{ fontSize:12, color:'rgba(255,255,255,0.9)', display:'flex', alignItems:'center', gap:5 }}>
+                    <span style={{ width:8, height:8, borderRadius:'50%', background:'#4ade80', display:'inline-block', animation:'pulse 1.5s infinite', boxShadow:'0 0 8px #4ade80' }}></span>
+                    ออนไลน์ตลอด 24 ชั่วโมง
+                  </div>
+                </div>
+              </div>
+              <div style={{ background:'rgba(255,255,255,0.2)', borderRadius:20, padding:'6px 14px', fontSize:11, color:'#fff', fontWeight:700, border:'1px solid rgba(255,255,255,0.3)' }}>
+                ⚡ ตอบทันที
+              </div>
             </div>
-            <div style={{ marginTop: 8, display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-              {['P90+ คืออะไร?','ราคาเท่าไหร่?','PEMF คืออะไร?'].map(q => (
-                <button key={q} onClick={() => setChatMsg(q)} style={{ padding: '3px 10px', borderRadius: 20, border: '1.5px solid ' + GBORDER, background: GLIGHT, color: GR, fontSize: 11, cursor: 'pointer', fontFamily: 'inherit', fontWeight: 600 }}>{q}</button>
+
+            {/* Chat Body */}
+            <div style={{ padding:'16px 16px 0' }}>
+              {/* Default bot message */}
+              {!chatReply && !chatLoading && (
+                <div style={{ display:'flex', gap:10, marginBottom:12 }}>
+                  <div style={{ width:30, height:30, borderRadius:'50%', background:'linear-gradient(135deg,#0d7377,#14a085)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:14, flexShrink:0 }}>🤖</div>
+                  <div style={{ background:'#f0fdf4', border:'1px solid #bbf7d0', borderRadius:'18px 18px 18px 4px', padding:'10px 14px', fontSize:13, color:'#1f2937', lineHeight:1.6, maxWidth:'85%' }}>
+                    สวัสดีค่ะ! ฉันชื่อ <strong style={{color:'#0d7377'}}>โอลี่</strong> 🌿<br/>
+                    มีคำถามเรื่อง P90+ ถามได้เลยนะคะ
+                  </div>
+                </div>
+              )}
+              {chatReply && (
+                <div style={{ display:'flex', gap:10, marginBottom:12 }}>
+                  <div style={{ width:30, height:30, borderRadius:'50%', background:'linear-gradient(135deg,#0d7377,#14a085)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:14, flexShrink:0 }}>🤖</div>
+                  <div style={{ background:'#f0fdf4', border:'1px solid #bbf7d0', borderRadius:'18px 18px 18px 4px', padding:'10px 14px', fontSize:13, color:'#1f2937', lineHeight:1.65, maxWidth:'85%' }}>{chatReply}</div>
+                </div>
+              )}
+              {chatLoading && (
+                <div style={{ display:'flex', gap:10, marginBottom:12 }}>
+                  <div style={{ width:30, height:30, borderRadius:'50%', background:'linear-gradient(135deg,#0d7377,#14a085)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:14, flexShrink:0 }}>🤖</div>
+                  <div style={{ background:'#f9fafb', border:'1px solid #e5e7eb', borderRadius:'18px 18px 18px 4px', padding:'12px 16px', display:'flex', gap:5, alignItems:'center' }}>
+                    {[0,1,2].map(j=><div key={j} style={{ width:7,height:7,borderRadius:'50%',background:'#14a085',animation:'bop 1.2s infinite',animationDelay:j*0.2+'s' }}/>)}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Quick Replies */}
+            <div style={{ padding:'8px 16px', display:'flex', gap:6, flexWrap:'wrap' }}>
+              {['P90+ คืออะไร?','ราคาเท่าไหร่?','PEMF คืออะไร?','ตารางประชุม'].map(q => (
+                <button key={q} onClick={() => { setChatMsg(q); }} style={{ padding:'7px 14px', borderRadius:20, border:'1.5px solid #bbf7d0', background:'linear-gradient(135deg,rgba(13,115,119,0.08),rgba(20,160,133,0.08))', color:'#0d7377', fontSize:12, cursor:'pointer', fontFamily:'inherit', fontWeight:600, transition:'all .15s' }}>{q}</button>
               ))}
             </div>
+
+            {/* Input */}
+            <div style={{ padding:'10px 16px 16px', display:'flex', gap:8, alignItems:'center' }}>
+              <input value={chatMsg} onChange={e => setChatMsg(e.target.value)} onKeyDown={e => e.key === 'Enter' && sendChat()}
+                placeholder="พิมพ์คำถามได้เลยค่ะ..." style={{ flex:1, padding:'11px 16px', borderRadius:25, border:'1.5px solid #d1fae5', fontSize:13, fontFamily:'inherit', outline:'none', background:'#f9fafb' }} />
+              <button onClick={sendChat} disabled={chatLoading || !chatMsg.trim()} style={{ width:42, height:42, borderRadius:'50%', border:'none', background:chatMsg.trim()?'linear-gradient(135deg,#0d7377,#14a085)':'#d1d5db', color:'#fff', fontSize:18, cursor:chatMsg.trim()?'pointer':'not-allowed', flexShrink:0, boxShadow:chatMsg.trim()?'0 4px 14px rgba(13,115,119,0.4)':'none', transition:'all .2s' }}>➤</button>
+            </div>
           </div>
-        </div>
+          </div>{/* end m-chat-box */}
+        </div>{/* end wrapper */}
       </div>
 
       {/* STEPS */}
