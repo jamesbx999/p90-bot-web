@@ -23,7 +23,7 @@ const DEFAULT_SETTINGS: SiteSettings = {
   incomePlan: '', poster1: '', poster2: '', poster3: '',
 };
 
-const BLANK_MEMBER = { username:'', slug:'', phone:'', lineUrl:'', messengerUrl:'', profileImg:'', refBaseUrl:'', heroTitle:'' };
+const BLANK_MEMBER = { username:'', slug:'', phone:'', lineUrl:'', messengerUrl:'', facebookUrl:'', profileImg:'', refBaseUrl:'', heroTitle:'' };
 type MemberForm = typeof BLANK_MEMBER;
 const DAYS = ['อาทิตย์','จันทร์','อังคาร','พุธ','พฤหัสบดี','ศุกร์','เสาร์'];
 const WEEKS = ['สัปดาห์ที่ 1','สัปดาห์ที่ 2','สัปดาห์ที่ 3','สัปดาห์ที่ 4'];
@@ -135,6 +135,7 @@ export default function AdminPage() {
       slug: memberForm.slug || undefined,
       lineUrl: memberForm.lineUrl,
       messengerUrl: memberForm.messengerUrl,
+      facebookUrl: memberForm.facebookUrl,
       profileImg: memberForm.profileImg,
       refBaseUrl: memberForm.refBaseUrl,
       heroTitle: memberForm.heroTitle,
@@ -163,6 +164,7 @@ export default function AdminPage() {
       phone: u.phone || '',
       lineUrl: u.lineUrl || '',
       messengerUrl: u.messengerUrl || '',
+      facebookUrl: (u as UserData & { facebookUrl?: string }).facebookUrl || '',
       profileImg: u.profileImg || '',
       refBaseUrl: u.refBaseUrl || '',
       heroTitle: u.heroTitle || '',
@@ -178,6 +180,7 @@ export default function AdminPage() {
       phone: editForm.phone,
       lineUrl: editForm.lineUrl,
       messengerUrl: editForm.messengerUrl,
+      facebookUrl: editForm.facebookUrl,
       profileImg: editForm.profileImg,
       refBaseUrl: editForm.refBaseUrl,
       heroTitle: editForm.heroTitle,
@@ -539,9 +542,11 @@ export default function AdminPage() {
                 <input style={ins} value={memberForm.messengerUrl} onChange={e=>mUp('messengerUrl')(e.target.value)} placeholder="https://m.me/username" />
               </div>
 
-              {/* Profile Photo */}
+              {/* Facebook */}
               <div style={{ marginBottom:16 }}>
-                <div style={{ fontSize:13,fontWeight:600,color:GR,marginBottom:8 }}>รูปโปรไฟล์</div>
+                <div style={{ fontSize:13,fontWeight:600,color:GR,marginBottom:6 }}>📘 Facebook ส่วนตัว</div>
+                <input style={ins} value={memberForm.facebookUrl} onChange={e=>mUp('facebookUrl')(e.target.value)} placeholder="https://facebook.com/yourname" />
+              </div>
                 <div style={{ display:'flex',gap:14,alignItems:'center' }}>
                   <div style={{ width:72,height:72,borderRadius:'50%',border:'2px dashed #d1d5db',background:'#f9fafb',display:'flex',alignItems:'center',justifyContent:'center',overflow:'hidden',flexShrink:0,position:'relative' }}>
                     {memberForm.profileImg?<img src={memberForm.profileImg} alt="" style={{ width:'100%',height:'100%',objectFit:'cover' }} />:<span style={{ fontSize:28,opacity:.3 }}>👤</span>}
@@ -626,9 +631,11 @@ export default function AdminPage() {
                 <input style={ins} value={editForm.messengerUrl} onChange={e=>setEditForm(p=>({...p,messengerUrl:e.target.value}))} placeholder="https://m.me/username" />
               </div>
 
-              {/* Profile Photo */}
+              {/* Facebook */}
               <div style={{ marginBottom:16 }}>
-                <div style={{ fontSize:13,fontWeight:600,color:GR,marginBottom:8 }}>รูปโปรไฟล์</div>
+                <div style={{ fontSize:13,fontWeight:600,color:GR,marginBottom:6 }}>📘 Facebook ส่วนตัว</div>
+                <input style={ins} value={editForm.facebookUrl} onChange={e=>setEditForm(p=>({...p,facebookUrl:e.target.value}))} placeholder="https://facebook.com/yourname" />
+              </div>
                 <div style={{ display:'flex',gap:14,alignItems:'center' }}>
                   <div style={{ width:72,height:72,borderRadius:'50%',border:'2px dashed #d1d5db',background:'#f9fafb',display:'flex',alignItems:'center',justifyContent:'center',overflow:'hidden',flexShrink:0,position:'relative' }}>
                     {editForm.profileImg
