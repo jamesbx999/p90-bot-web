@@ -241,6 +241,15 @@ function MemberContent() {
               </div>
             </div>
 
+            {/* Go to Bot Link */}
+            <div style={{ background:'rgba(13,115,119,0.06)', borderBottom:'1px solid rgba(20,160,133,0.12)', padding:'8px 18px', display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+              <div style={{ fontSize:12, color:'#5a8090' }}>ต้องการแชทเต็มรูปแบบ?</div>
+              <a href="https://p90-olylife-bot.vercel.app/" target="_blank" rel="noreferrer"
+                style={{ display:'inline-flex', alignItems:'center', gap:6, padding:'5px 14px', borderRadius:20, background:'linear-gradient(135deg,#0d7377,#14a085)', color:'#fff', textDecoration:'none', fontSize:12, fontWeight:700, boxShadow:'0 2px 8px rgba(13,115,119,0.25)' }}>
+                🤖 ไปที่บอท →
+              </a>
+            </div>
+
             {/* Chat Body */}
             <div style={{ padding:'16px 16px 0' }}>
               {/* Default bot message */}
