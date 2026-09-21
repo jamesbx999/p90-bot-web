@@ -8,6 +8,7 @@ export interface UserData {
   refCode: string;
   referredBy?: string;
   lineUrl?: string;
+  facebookUrl?: string;
   messengerUrl?: string;
   profileImg?: string;
   refBaseUrl?: string;
@@ -58,7 +59,7 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
-  const { username, phone, referredBy, lineUrl, messengerUrl, profileImg, refBaseUrl, heroTitle, slug, createdByAdmin } = body;
+  const { username, phone, referredBy, lineUrl, messengerUrl, facebookUrl, profileImg, refBaseUrl, heroTitle, slug, createdByAdmin } = body;
   if (!username?.trim()) {
     return NextResponse.json({ error: 'username required' }, { status: 400 });
   }
@@ -72,6 +73,7 @@ export async function POST(req: NextRequest) {
     referredBy: referredBy || undefined,
     lineUrl: lineUrl?.trim() || undefined,
     messengerUrl: messengerUrl?.trim() || undefined,
+    facebookUrl: facebookUrl?.trim() || undefined,
     profileImg: profileImg?.trim() || undefined,
     refBaseUrl: refBaseUrl?.trim() || undefined,
     heroTitle: heroTitle?.trim() || undefined,
