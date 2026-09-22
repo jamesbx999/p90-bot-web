@@ -1,10 +1,7 @@
 export const BASE_KNOWLEDGE = `
 === OlyLife THZ Tera-P90+ ข้อมูลสินค้า ===
 ชื่อ: OlyLife THZ Tera-P90+ | รหัส: OLY-HCA002A | ราคา: $1,500 USD
-เว็บไซต์: https://www.olylifeint.com/
-บริษัท OlyLife ก่อตั้งปี 2022 สำนักงานไทย: Unit 2004 Level 2, The Street 139 ถ.รัชดาฯ ดินแดง กรุงเทพ
-Facebook: https://www.facebook.com/OlyLifeGlobalByVibeVerse/
-สาขา: ฮ่องกง, มาเลเซีย, สิงคโปร์, อินโดนีเซีย, อังกฤษ
+สาขา: ไทย, ฮ่องกง, มาเลเซีย, สิงคโปร์, อินโดนีเซีย, อังกฤษ
 
 === ประกอบด้วย 3 อุปกรณ์ ===
 1. Main Device – PEMF & Terahertz Technology
